@@ -1,0 +1,42 @@
+name = "Demonstration"
+description = "Test all the features"
+author = "dev"
+random = true # randomize question order
+
+[[question]]
+type = "single" # multiple choice, single selection
+query = "1+1=?"
+options = [1, 2, "3", 4]
+correct = [1] # index(es) of correct answer (more than one can be correct)
+random = true # randomize option order
+
+[[question]]
+type = "multiple" # multiple choice, multiple selection
+query = "sqrt(4)=?"
+options = [2, -2, 4, -4]
+correct = [0,1] # indexes of correct answers
+random = false # randomize option order
+
+[[question]]
+type = "connect" # connect from the left column to the right column
+query = "Connect the correct pairs"
+pairs = [["apple", "pomme"], ["orange", "naranja"], ["cience","sciència"]]
+random = true # recommended
+
+[[question]]
+type = "short" # short written answer
+query = "Apple in french"
+options = ["Pomme", "pomme", "Pome", "pome"]
+
+[[question]]
+type = "long" # long written answer
+query = "What is a cell?"
+options = ["The smallest unit of life"]
+ai = false # if turned on, AI will be used to check wether they match even if not exactly
+
+[[question]]
+type = "range" # a slider to pick a number between min and max
+min = 0
+max = 10
+query = "How would you rate the experience?"
+correct = 10
