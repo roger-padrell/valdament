@@ -27,6 +27,7 @@ random = true # recommended
 type = "short" # short written answer
 query = "Apple in french"
 options = ["Pomme", "pomme", "Pome", "pome"]
+max = 40 # maximum number of characters allowed
 
 [[question]]
 type = "long" # long written answer

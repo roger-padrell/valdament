@@ -3,6 +3,8 @@ import 'quiz_model.dart';
 import 'package:toml/toml.dart';
 import 'questions/single.dart';
 import 'questions/multiple.dart';
+import 'questions/connect.dart';
+import 'questions/short.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
@@ -18,7 +20,7 @@ class QuestionWidget extends StatelessWidget{
   final int questionNumber;
   final int total_questions;
   final bool checking;
-  final void Function(bool somethingSelected, bool isCorrect) onAnswerSelected;
+  final void Function(bool somethingSelected, bool isCorrect, {bool submitted_from_within}) onAnswerSelected;
   QuestionWidget({
     required this.parsed_quiz,
     required this.questionNumber,
@@ -37,6 +39,12 @@ class QuestionWidget extends StatelessWidget{
     }
     else if(parsed_quiz['question'][questionNumber]['type'] == 'multiple') {
       return QuestionMultiple(options: parsed_quiz['question'][questionNumber]['options'], correct_options: parsed_quiz['question'][questionNumber]['correct'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
+    }
+    else if(parsed_quiz['question'][questionNumber]['type'] == 'connect') {
+      return QuestionConnect(pairs: parsed_quiz['question'][questionNumber]['pairs'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
+    }
+    else if(parsed_quiz['question'][questionNumber]['type'] == 'short') {
+      return QuestionShort(options: parsed_quiz['question'][questionNumber]['options'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, max: parsed_quiz['question'][questionNumber]['max'] ?? 40);
     }
     else {
       return const Text("Unknown question type");
@@ -67,6 +75,32 @@ class _QuizPageState extends State<QuizPage> {
     }
   
     answers = List.filled(total_questions, 0);
+  }
+
+  void submitButton() {
+    if(answer_selected) {
+      // check
+      setState(() {
+        if(checking){
+          question_count++;
+          answer_selected = false;
+          is_correct = false;
+          checking = false;
+        }
+        else{
+          checking = true;
+          answers?[questionNumber] = is_correct ? 1 : -1;
+        }
+      });
+    } else {
+      // skip
+      setState(() {
+        question_count++;
+        answer_selected = false;
+        is_correct = false;
+        checking = false;
+      });
+    }
   }
 
   @override
@@ -132,7 +166,7 @@ class _QuizPageState extends State<QuizPage> {
                   Text(parsed_quiz['question'][questionNumber]['query'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
                   SizedBox(height: 10.0,),
                   SizedBox(
-                    child: QuestionWidget(parsed_quiz: parsed_quiz, questionNumber: questionNumber, total_questions: total_questions, onAnswerSelected: (bool something_selected, bool correct) => setState(() {answer_selected = something_selected; is_correct = correct;}), checking: checking,)
+                    child: QuestionWidget(parsed_quiz: parsed_quiz, questionNumber: questionNumber, total_questions: total_questions, onAnswerSelected: (bool something_selected, bool correct, {bool submitted_from_within=false}) => setState(() {answer_selected = something_selected; is_correct = correct; if(submitted_from_within) {submitButton();}}), checking: checking,)
                   ),
                 ],
               ),
@@ -143,29 +177,7 @@ class _QuizPageState extends State<QuizPage> {
               child:  FractionallySizedBox(
                 widthFactor: 0.9,
                 child: ElevatedButton(
-                  onPressed: answer_selected ? () {
-                    // check
-                    setState(() {
-                      if(checking){
-                        question_count++;
-                        answer_selected = false;
-                        is_correct = false;
-                        checking = false;
-                      }
-                      else{
-                        checking = true;
-                        answers?[questionNumber] = is_correct ? 1 : -1;
-                      }
-                    });
-                  } : () {
-                    // skip
-                    setState(() {
-                      question_count++;
-                      answer_selected = false;
-                      is_correct = false;
-                      checking = false;
-                    });
-                  },
+                  onPressed: () => {submitButton()},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: checking ? (is_correct ? Colors.green : Colors.red) : (answer_selected ? Colors.blue : Colors.grey),
                   ),

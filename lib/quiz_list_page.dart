@@ -160,7 +160,11 @@ class _QuizListPageState extends State<QuizListPage> {
               onTap: () {
               if (_selectionMode) {
                 setState(() {
-                  if (selected) _selected.remove(index); else _selected.add(index);
+                  if (selected) {
+                    _selected.remove(index);
+                  } else {
+                    _selected.add(index);
+                  }
                 });
                 return;
               }
