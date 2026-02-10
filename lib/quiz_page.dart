@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'quiz_model.dart';
 import 'package:toml/toml.dart';
+
 import 'questions/single.dart';
 import 'questions/multiple.dart';
 import 'questions/connect.dart';
 import 'questions/short.dart';
+import 'questions/long.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
@@ -34,17 +36,21 @@ class QuestionWidget extends StatelessWidget{
     if(questionNumber >= total_questions) {
       return const Text("Quiz completed!");
     }
+    
     if(parsed_quiz['question'][questionNumber]['type'] == 'single') {
       return QuestionSingle(options: parsed_quiz['question'][questionNumber]['options'], correct_options: parsed_quiz['question'][questionNumber]['correct'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
     }
     else if(parsed_quiz['question'][questionNumber]['type'] == 'multiple') {
       return QuestionMultiple(options: parsed_quiz['question'][questionNumber]['options'], correct_options: parsed_quiz['question'][questionNumber]['correct'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
     }
+    else if(parsed_quiz['question'][questionNumber]['type'] == 'long') {
+      return QuestionLong(options: parsed_quiz['question'][questionNumber]['options'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, max: parsed_quiz['question'][questionNumber]['max'] ?? 40, ai: parsed_quiz['question'][questionNumber]['ai'] ?? false);
+    }
     else if(parsed_quiz['question'][questionNumber]['type'] == 'connect') {
       return QuestionConnect(pairs: parsed_quiz['question'][questionNumber]['pairs'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
     }
     else if(parsed_quiz['question'][questionNumber]['type'] == 'short') {
-      return QuestionShort(options: parsed_quiz['question'][questionNumber]['options'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, max: parsed_quiz['question'][questionNumber]['max'] ?? 40);
+      return QuestionShort(options: parsed_quiz['question'][questionNumber]['options'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, max: parsed_quiz['question'][questionNumber]['max'] ?? 10);
     }
     else {
       return const Text("Unknown question type");

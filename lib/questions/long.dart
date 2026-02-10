@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 
-class QuestionShort extends StatefulWidget {
+class QuestionLong extends StatefulWidget {
   final List<dynamic> options;
   final void Function(bool somethingSelected, bool isCorrect, {bool submitted_from_within}) onAnswerSelected;
   final bool checking;
   final int max;
+  final bool ai;
 
-  const QuestionShort({
+  const QuestionLong({
     super.key, 
     required this.options, 
     required this.onAnswerSelected, 
     required this.checking,
     this.max = 40,
+    this.ai = false,
   });
 
   @override
-  State<QuestionShort> createState() => _QuestionShortState();
+  State<QuestionLong> createState() => _QuestionLongState();
 }
 
-class _QuestionShortState extends State<QuestionShort> {
+class _QuestionLongState extends State<QuestionLong> {
   TextEditingController? _controller;
   String text = "";
 
@@ -52,14 +54,14 @@ class _QuestionShortState extends State<QuestionShort> {
         readOnly: widget.checking,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: 'Write your short answer here',
+          labelText: 'Write your long answer here',
           filled: true,
           fillColor: widget.checking ? (check() ? Colors.green : Colors.red) : Colors.transparent,
         ),
         maxLength: widget.max,
-        onSubmitted: (value) => {
-          widget.onAnswerSelected(text.isNotEmpty, check(), submitted_from_within: true)
-        },
+        autocorrect: false,
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
       ),
       Text(widget.checking && !check() ? "Correct answers include: ${widget.options.join(", ")}" : ""),
     ]);
