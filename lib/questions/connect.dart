@@ -81,7 +81,16 @@ class _QuestionConnectState extends State<QuestionConnect> {
                 widget.onAnswerSelected(true, check());
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: widget.checking ? (made_pairs[i].$1 == made_pairs[i].$2 ? Colors.green : Colors.red) : (selected == i ? Colors.blue : null),
+                backgroundColor: (widget.checking ? (
+                  made_pairs[i].$1 == made_pairs[i].$2 ? 
+                    Colors.green : 
+                    Colors.red
+                  ) : 
+                  (selected == i ? 
+                    Colors.blue : 
+                    null
+                  )
+                )
               ),
               child: Text(widget.pairs[made_pairs[i].$2][1].toString()),
             )

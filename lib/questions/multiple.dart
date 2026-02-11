@@ -25,7 +25,8 @@ class _QuestionMultipleState extends State<QuestionMultiple> {
   var selected_options = <int>[];
 
   bool check() {
-    return selected_options.every((option) => widget.correct_options.contains(option)) && widget.correct_options.every((option) => selected_options.contains(option));
+    return selected_options.every((option) => widget.correct_options.contains(option)) && 
+      widget.correct_options.every((option) => selected_options.contains(option));
   }
 
   @override
@@ -61,7 +62,19 @@ class _QuestionMultipleState extends State<QuestionMultiple> {
               widget.onAnswerSelected(selected_options.isNotEmpty, check());
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: widget.checking ? (widget.correct_options.contains(option_order[i]) ? Colors.green : (selected_options.contains(option_order[i]) ? Colors.red : null)) : (selected_options.contains(option_order[i]) ? Colors.blue : null),
+              backgroundColor: (widget.checking ? (
+                widget.correct_options.contains(option_order[i]) ? 
+                  Colors.green : 
+                  (selected_options.contains(option_order[i]) ? 
+                    Colors.red : 
+                    null
+                  )
+                ) : 
+                (selected_options.contains(option_order[i]) ? 
+                  Colors.blue : 
+                  null
+                )
+              )
             ),
             child: Text(widget.options[option_order[i]].toString()),
           ),

@@ -22,8 +22,13 @@ class QuestionWidget extends StatelessWidget{
   final int questionNumber;
   final int total_questions;
   final bool checking;
-  final void Function(bool somethingSelected, bool isCorrect, {bool submitted_from_within}) onAnswerSelected;
-  QuestionWidget({
+  final void Function(
+    bool somethingSelected, 
+    bool isCorrect, 
+    {bool submitted_from_within}
+  ) onAnswerSelected;
+
+  const QuestionWidget({super.key, 
     required this.parsed_quiz,
     required this.questionNumber,
     required this.total_questions,
@@ -36,24 +41,53 @@ class QuestionWidget extends StatelessWidget{
     if(questionNumber >= total_questions) {
       return const Text("Quiz completed!");
     }
-    
-    if(parsed_quiz['question'][questionNumber]['type'] == 'single') {
-      return QuestionSingle(options: parsed_quiz['question'][questionNumber]['options'], correct_options: parsed_quiz['question'][questionNumber]['correct'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
-    }
-    else if(parsed_quiz['question'][questionNumber]['type'] == 'multiple') {
-      return QuestionMultiple(options: parsed_quiz['question'][questionNumber]['options'], correct_options: parsed_quiz['question'][questionNumber]['correct'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
-    }
-    else if(parsed_quiz['question'][questionNumber]['type'] == 'long') {
-      return QuestionLong(options: parsed_quiz['question'][questionNumber]['options'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, max: parsed_quiz['question'][questionNumber]['max'] ?? 40, ai: parsed_quiz['question'][questionNumber]['ai'] ?? false);
-    }
-    else if(parsed_quiz['question'][questionNumber]['type'] == 'connect') {
-      return QuestionConnect(pairs: parsed_quiz['question'][questionNumber]['pairs'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false);
-    }
-    else if(parsed_quiz['question'][questionNumber]['type'] == 'short') {
-      return QuestionShort(options: parsed_quiz['question'][questionNumber]['options'], onAnswerSelected: onAnswerSelected, key: ValueKey(questionNumber), checking: checking, max: parsed_quiz['question'][questionNumber]['max'] ?? 10);
-    }
-    else {
-      return const Text("Unknown question type");
+
+    switch(parsed_quiz['question'][questionNumber]['type']) {
+      case 'single':
+        return QuestionSingle(
+          options: parsed_quiz['question'][questionNumber]['options'], 
+          correct_options: parsed_quiz['question'][questionNumber]['correct'], 
+          onAnswerSelected: onAnswerSelected, 
+          key: ValueKey(questionNumber), 
+          checking: checking, 
+          randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false
+        );
+      case 'multiple':
+        return QuestionMultiple(
+          options: parsed_quiz['question'][questionNumber]['options'], 
+          correct_options: parsed_quiz['question'][questionNumber]['correct'], 
+          onAnswerSelected: onAnswerSelected, 
+          key: ValueKey(questionNumber), 
+          checking: checking, 
+          randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false
+        );
+      case 'long':
+        return QuestionLong(
+          options: parsed_quiz['question'][questionNumber]['options'], 
+          onAnswerSelected: onAnswerSelected, 
+          key: ValueKey(questionNumber), 
+          checking: checking, 
+          max: parsed_quiz['question'][questionNumber]['max'] ?? 40,
+          ai: parsed_quiz['question'][questionNumber]['ai'] ?? false
+        );
+      case 'connect':
+        return QuestionConnect(
+          pairs: parsed_quiz['question'][questionNumber]['pairs'], 
+          onAnswerSelected: onAnswerSelected, 
+          key: ValueKey(questionNumber), 
+          checking: checking, 
+          randomize_options: parsed_quiz['question'][questionNumber]['random'] ?? false
+        );
+      case 'short':
+        return QuestionShort(
+          options: parsed_quiz['question'][questionNumber]['options'], 
+          onAnswerSelected: onAnswerSelected, 
+          key: ValueKey(questionNumber), 
+          checking: checking, 
+          max: parsed_quiz['question'][questionNumber]['max'] ?? 10
+        );
+      default:
+        return const Text("Unknown question type");
     }
   }
 }
@@ -124,7 +158,10 @@ class _QuizPageState extends State<QuizPage> {
           children: [
             Text("Quiz completed!", style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),),
             SizedBox(height: 20.0,),
-            Text("Your score: " + answers!.where((a) => a == 1).length.toString() + " / " + total_questions.toString(), style: TextStyle(fontSize: 18.0),),
+            Text(
+              "Your score: ${answers!.where((a) => a == 1).length} / $total_questions", 
+              style: TextStyle(fontSize: 18.0),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -156,7 +193,7 @@ class _QuizPageState extends State<QuizPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Question " + (question_count + 1).toString() +" of $total_questions"),
+                  Text("Question ${question_count + 1} of $total_questions"),
                   Row(children: [
                     for(int n = 0; n < total_questions; n++)
                       Container(
@@ -165,14 +202,41 @@ class _QuizPageState extends State<QuizPage> {
                         margin: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: n == questionNumber ? Colors.blue : (answers?[n] == 0 ? Colors.grey : (answers?[n] == 1 ? Colors.green : Colors.red)),
+                          color: (n == questionNumber ? 
+                            Colors.blue : 
+                            (answers?[n] == 0 ? 
+                              Colors.grey : 
+                              (answers?[n] == 1 ? 
+                                Colors.green : 
+                                Colors.red
+                              )
+                            )
+                          ),
                         ),
                       )
                   ],),
-                  Text(parsed_quiz['question'][questionNumber]['query'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),),
+                  Text(
+                    parsed_quiz['question'][questionNumber]['query'], 
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                  ),
                   SizedBox(height: 10.0,),
                   SizedBox(
-                    child: QuestionWidget(parsed_quiz: parsed_quiz, questionNumber: questionNumber, total_questions: total_questions, onAnswerSelected: (bool something_selected, bool correct, {bool submitted_from_within=false}) => setState(() {answer_selected = something_selected; is_correct = correct; if(submitted_from_within) {submitButton();}}), checking: checking,)
+                    child: QuestionWidget(
+                      parsed_quiz: parsed_quiz, 
+                      questionNumber: questionNumber, 
+                      total_questions: total_questions, 
+                      onAnswerSelected: (
+                        bool something_selected, 
+                        bool correct, {
+                        bool submitted_from_within=false
+                      }) => setState(() {
+                        answer_selected = something_selected; 
+                        is_correct = correct; 
+                        if(submitted_from_within) {
+                          submitButton();
+                        }}), 
+                      checking: checking,
+                    )
                   ),
                 ],
               ),
@@ -185,7 +249,19 @@ class _QuizPageState extends State<QuizPage> {
                 child: ElevatedButton(
                   onPressed: () => {submitButton()},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: checking ? (is_correct ? Colors.green : Colors.red) : (answer_selected ? Colors.blue : Colors.grey),
+                    backgroundColor: 
+                      (checking ? 
+                        (
+                          is_correct ? 
+                          Colors.green : 
+                          Colors.red
+                        ) : 
+                        (
+                          answer_selected ? 
+                            Colors.blue : 
+                            Colors.grey
+                        )
+                      ),
                   ),
                   child: Text(answer_selected ? (checking ? "Next Question" : "Check Answer") : "Skip", style: TextStyle(color: Colors.white)),
                 )

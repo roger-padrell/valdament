@@ -62,8 +62,21 @@ class _QuestionSingleState extends State<QuestionSingle> {
               widget.onAnswerSelected(selected_option != -1, check());
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: widget.checking ? (widget.correct_options.contains(option_order[i]) ? Colors.green : (selected_option == option_order[i] ? Colors.red : null)) : (selected_option == option_order[i] ? Colors.blue : null),
-            ),
+              backgroundColor: 
+                (widget.checking ? 
+                  (widget.correct_options.contains(option_order[i]) ? 
+                    Colors.green : 
+                    (selected_option == option_order[i] ? 
+                      Colors.red : 
+                      null
+                    )
+                  ) : 
+                  (selected_option == option_order[i] ? 
+                    Colors.blue : 
+                    null
+                  ) 
+                ) // backgroundColor
+            ), // style
             child: Text(widget.options[option_order[i]].toString()),
           ),
         ),
